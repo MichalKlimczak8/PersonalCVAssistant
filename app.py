@@ -41,7 +41,7 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
     with st.chat_message("assistant"):
         with st.spinner("Thinking... (Cloud Hosted)"):
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 messages=st.session_state.messages
             )
             answer = response.choices[0].message.content
