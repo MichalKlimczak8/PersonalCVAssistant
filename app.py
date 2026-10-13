@@ -18,8 +18,10 @@ with st.chat_message("assistant"):
                         chosen_model = preferred[0] if preferred else available_models[0]
 
                     payload = {
-                        "model": chosen_model,
-                        "messages": st.session_state.messages
+                    "model": "qwen/qwen3.8-27b",
+                    "messages": st.session_state.messages,
+                    "temperature": 0.6,
+                    "max_tokens": 2048
                     }
                     
                     response = requests.post(
