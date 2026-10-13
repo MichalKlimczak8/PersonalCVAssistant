@@ -52,7 +52,11 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
                 answer = data["choices"][0]["message"]["content"]
                 st.markdown(answer)
             except Exception as e:
-                answer = f"Error communicating with AI service: {e}"
-                st.error(answer)
+                    # Print the exact error and the full API response for debugging
+                    st.error(f"Error details: {e}")
+                    if 'data' in locals():
+                        st.write("Raw API Response from Groq:", data)
+                    else:
+                        st.write("Raw HTTP Response text:", response.text)
             
     st.session_state.messages.append({"role": "assistant", "content": answer})
