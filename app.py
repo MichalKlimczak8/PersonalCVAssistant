@@ -8,7 +8,9 @@ st.markdown("Ask me anything about Michal's professional background, projects, o
 @st.cache_resource
 def load_cv():
     with open("all_cvs_combined.md", "r", encoding="utf-8") as f:
-        return f.read()
+        content = f.read()
+    # Truncate content to roughly 3,000 characters to stay well under Groq's 8K free tier TPM limit
+    return content[:3000]
 
 cv_context = load_cv()
 system_prompt = """
