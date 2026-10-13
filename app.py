@@ -40,7 +40,7 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
                     "Content-Type": "application/json"
                 }
                 payload = {
-                        "model": "llama-3.1-8b-instant",  # Updated to the currently active free-tier model
+                        "model": "gpt-oss-20b",  # Updated to Groq's widely available open model line
                         "messages": st.session_state.messages
                 }
                 response = requests.post(
