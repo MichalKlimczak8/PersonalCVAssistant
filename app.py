@@ -40,8 +40,8 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
                     "Content-Type": "application/json"
                 }
                 payload = {
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": st.session_state.messages
+                        "model": "llama-3.1-8b-instant",  # Updated to the currently active free-tier model
+                        "messages": st.session_state.messages
                 }
                 response = requests.post(
                     "https://api.groq.com/openai/v1/chat/completions",
