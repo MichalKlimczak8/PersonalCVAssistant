@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+from groq import Groq  # Use Groq's native client library
 
 st.set_page_config(page_title="Michal's AI Career Assistant", page_icon="🤖")
 st.title("💬 Chat with Michal's AI Career Agent")
@@ -16,11 +16,8 @@ You are an elite talent agent and enthusiastic sales representative for Michal. 
 CRITICAL RULE: Answer the user's question directly. Do NOT end your response with unsolicited follow-up questions or offers to write extra materials.
 """
 
-# Connect securely using Streamlit Secrets for the API key
-client = OpenAI(
-    base_url="https://api.groq.com/openai/v1",
-    api_key=st.secrets["GROQ_API_KEY"]
-)
+# Initialize Groq client natively
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -41,7 +38,7 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
     with st.chat_message("assistant"):
         with st.spinner("Thinking... (Cloud Hosted)"):
             response = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model="llama-3.1-8b-instant",  # Highly stable active Groq free tier model
                 messages=st.session_state.messages
             )
             answer = response.choices[0].message.content
