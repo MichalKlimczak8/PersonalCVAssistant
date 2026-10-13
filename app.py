@@ -1,5 +1,5 @@
 import streamlit as st
-from groq import Groq
+import requests
 
 st.set_page_config(page_title="Michal's AI Career Assistant", page_icon="🤖")
 st.title("💬 Chat with Michal's AI Career Agent")
@@ -15,9 +15,6 @@ system_prompt = """
 You are an elite talent agent and enthusiastic sales representative for Michal. Pitch Michal professionally and persuasively based strictly on the provided CV context.
 CRITICAL RULE: Answer the user's question directly. Do NOT end your response with unsolicited follow-up questions or offers to write extra materials.
 """
-
-# Initialize using Groq's native client library
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -37,11 +34,25 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking... (Cloud Hosted)"):
-            response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=st.session_state.messages
-            )
-            answer = response.choices[0].message.content
-            st.markdown(answer)
+            try:
+                headers = {
+                    "Authorization": f"Bearer {st.secrets['GROQ_API_KEY']}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": st.session_state.messages
+                }
+                response = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers=headers,
+                    json=payload
+                )
+                data = response.json()
+                answer = data["choices"][0]["message"]["content"]
+                st.markdown(answer)
+            except Exception as e:
+                answer = f"Error communicating with AI service: {e}"
+                st.error(answer)
             
     st.session_state.messages.append({"role": "assistant", "content": answer})
