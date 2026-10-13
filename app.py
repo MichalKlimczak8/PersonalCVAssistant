@@ -1,5 +1,5 @@
 import streamlit as st
-import requests
+from groq import Groq
 
 st.set_page_config(page_title="Michal's AI Career Assistant", page_icon="🤖")
 st.title("💬 Chat with Michal's AI Career Agent")
@@ -15,6 +15,8 @@ system_prompt = """
 You are an elite talent agent and enthusiastic sales representative for Michal. Pitch Michal professionally and persuasively based strictly on the provided CV context.
 CRITICAL RULE: Answer the user's question directly. Do NOT end your response with unsolicited follow-up questions or offers to write extra materials.
 """
+
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -35,28 +37,14 @@ if user_query := st.chat_input("Ask about Michal's experience..."):
     with st.chat_message("assistant"):
         with st.spinner("Thinking... (Cloud Hosted)"):
             try:
-                headers = {
-                    "Authorization": f"Bearer {st.secrets['GROQ_API_KEY']}",
-                    "Content-Type": "application/json"
-                }
-                payload = {
-                        "model": "gpt-oss-20b",  # Updated to Groq's widely available open model line
-                        "messages": st.session_state.messages
-                }
-                response = requests.post(
-                    "https://api.groq.com/openai/v1/chat/completions",
-                    headers=headers,
-                    json=payload
+                response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",  # Verified active free-tier model
+                    messages=st.session_state.messages
                 )
-                data = response.json()
-                answer = data["choices"][0]["message"]["content"]
+                answer = response.choices[0].message.content
                 st.markdown(answer)
             except Exception as e:
-                    # Print the exact error and the full API response for debugging
-                    st.error(f"Error details: {e}")
-                    if 'data' in locals():
-                        st.write("Raw API Response from Groq:", data)
-                    else:
-                        st.write("Raw HTTP Response text:", response.text)
+                answer = f"Error: {e}"
+                st.error(answer)
             
     st.session_state.messages.append({"role": "assistant", "content": answer})
